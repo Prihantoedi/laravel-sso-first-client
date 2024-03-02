@@ -29,10 +29,13 @@ class UserController extends Controller
             $url_exploder = explode('acc=', $url);
 
             $token_access = end($url_exploder);
+
+     
             
             $secret = new Secret();
             $decrypt_ta = $secret->token_decryption($token_access);
 
+    
     
             $token_matcher = DB::table('sessions')->select('token_refresh', 'token_csrf', 'expires_at')->where('token_access', $decrypt_ta)->first();
         
@@ -47,12 +50,15 @@ class UserController extends Controller
             $token_data = [
                 'access' => $token_access,
                 'refresh' => $decrypt_tr,
-                'csrf' => $decrypt_tc
+                'csrf' => $decrypt_tc, 
+                'expires' => $token_matcher->expires_at
             ];
+
+        
             return view('authen.transit', compact('token_data'));
 
         } catch(\Exception $e){
-            return redirect()->back();
+            return redirect()->route('/'); // it must be redirect to invalid page
         }
        
     }
