@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Module\Secret;
+use Illuminate\Support\Facades\DB;
+
 
 class UserController extends Controller
 {
@@ -22,14 +24,37 @@ class UserController extends Controller
 
         $url = url()->full();
         
-        $url_exploder = explode('acc=', $url);
-
-        $get_token_access = end($url_exploder);
         
-        $secret = new Secret();
-        $decrypt_ta = $secret->token_decryption($get_token_access);
-        dd($decrypt_ta);
-        return view('authen.transit');
+        try{
+            $url_exploder = explode('acc=', $url);
+
+            $token_access = end($url_exploder);
+            
+            $secret = new Secret();
+            $decrypt_ta = $secret->token_decryption($token_access);
+
+    
+            $token_matcher = DB::table('sessions')->select('token_refresh', 'token_csrf', 'expires_at')->where('token_access', $decrypt_ta)->first();
+        
+            
+            if(!$token_matcher){
+                return redirect()->back();
+            } 
+    
+            $decrypt_tr = $secret->token_encryption($token_matcher->token_refresh);
+            $decrypt_tc = $secret->token_encryption($token_matcher->token_csrf);
+    
+            $token_data = [
+                'access' => $token_access,
+                'refresh' => $decrypt_tr,
+                'csrf' => $decrypt_tc
+            ];
+            return view('authen.transit', compact('token_data'));
+
+        } catch(\Exception $e){
+            return redirect()->back();
+        }
+       
     }
    
 }
