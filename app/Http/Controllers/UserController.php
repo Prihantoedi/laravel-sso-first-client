@@ -16,5 +16,9 @@ class UserController extends Controller
     
         return view('welcome', compact('is_auth'));
     }
+
+    public function transit(){
+        return view('authen.transit');
+    }
    
 }

@@ -13,7 +13,7 @@
         <div class="not-auth-info text-center mt-5">
             <div>You're still not loggin</div>
             <div class="mt-3">
-                <a href="" class="btn btn-danger">Login Here</a>
+                <a href="http://127.0.0.1:8000/login?app=first_app_client" class="btn btn-danger">Login With SSO</a>
             </div>
         </div>
     @endif

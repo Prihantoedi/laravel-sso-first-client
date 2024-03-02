@@ -15,3 +15,4 @@ use App\Http\Controllers\UserController;
 */
 
 Route::get('/', [UserController::class, 'index'])->name('index');
+Route::get('/transit', [UserController::class, 'transit'])->name('transit');
