@@ -8,14 +8,13 @@
     
     <div class="text-center"><h1>{{$data['app_name']}}</h1></div>
 
-    @if(!$is_auth)
-        <div class="not-auth-info text-center mt-5">
-            <div>You're still not loggin</div>
-            <div class="mt-3">
-                <a href="http://127.0.0.1:8000/login?app=first_client_app" class="btn btn-danger">Login With SSO</a>
-            </div>
+    <div class="not-auth-info text-center mt-5">
+        <div>You're still not loggin</div>
+        <div class="mt-3">
+            <a href="http://127.0.0.1:8000/login?app=first_client_app" class="btn btn-danger">Login With SSO</a>
         </div>
-    @endif
+    </div>
+
 
     <div class="client-app-grp mt-4 d-flex justify-content-center gap-3 p-5" style="border: 1px #e7e7e7 solid;">
         <form action="" method="GET">
@@ -53,8 +52,6 @@
         }
         return val;
     }
-
-
     
     let data = {
         token_access : getCookieVal('access'),
@@ -74,12 +71,17 @@
         xhr.onreadystatechange = function() {
             if(xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200){
                 const res = JSON.parse(xhr.responseText);
-                // console.log(res);
                 if(res.authorization === 'allowed'){
                     document.getElementsByClassName('not-auth-info')[0].style.display = 'none';
                     document.getElementById('btn-logout-wrapper').style.display = 'block';
+                } else{
+                    console.log(xhr.responseText);
+                    document.cookie = 'access=';
+                    document.cookie = 'refresh=';
+                    document.cookie = 'csrf=';
+                    location.reload();
                 }
-            }
+            } 
         };
 
         xhr.send(formData);
