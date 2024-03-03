@@ -1,3 +1,8 @@
 .not-auth-info{
     /* display: block; */
 }
+
+#btn-logout-wrapper{
+    display: none;
+    cursor: pointer;
+}

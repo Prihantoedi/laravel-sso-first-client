@@ -1,15 +1,11 @@
 @extends('layout.app')
 @section('content')
 <div class="container pt-5">
-    <div class="text-end">
-        <a href="">Logout</a>
+    <div class="text-end" id="btn-logout-wrapper">
+        <a id='btn-logout'>Logout</a>
     </div>
 
-    @if($is_auth)
-        <div class="text-end">
-            <a href="">Logout</a>
-        </div>
-    @endif
+    
     <div class="text-center"><h1>{{$data['app_name']}}</h1></div>
 
     @if(!$is_auth)
@@ -43,7 +39,6 @@
         const allCookie = document.cookie;
 
         const cookieSplitter = allCookie.split(';');
-        console.log(cookieSplitter);
         let key = '';
         let val  = '';
         let cookieIndex = 0;
@@ -67,26 +62,30 @@
         client_app : 'first_client_app'
     };
 
-    let formData = new FormData();
+    if(data.token_access != '' && data.token_refresh != ''){
+        let formData = new FormData();
 
-    formData.append('token', JSON.stringify(data));
+        formData.append('token', JSON.stringify(data));
 
-    let xhr = new XMLHttpRequest();
+        let xhr = new XMLHttpRequest();
 
-    xhr.open('POST', 'http://127.0.0.1:8000/api/v1/authorize', true);
+        xhr.open('POST', 'http://127.0.0.1:8000/api/v1/authorize', true);
 
-    xhr.onreadystatechange = function() {
-        if(xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200){
-            const res = JSON.parse(xhr.responseText);
-            // console.log(res);
-            if(res.authorization === 'allowed'){
-                document.getElementsByClassName('not-auth-info')[0].style.display = 'none';
+        xhr.onreadystatechange = function() {
+            if(xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200){
+                const res = JSON.parse(xhr.responseText);
+                // console.log(res);
+                if(res.authorization === 'allowed'){
+                    document.getElementsByClassName('not-auth-info')[0].style.display = 'none';
+                    document.getElementById('btn-logout-wrapper').style.display = 'block';
+                }
             }
-        }
-    };
+        };
 
-    xhr.send(formData);
+        xhr.send(formData);
+    }
 
+   
     let dum1stAppBtn = document.getElementById('dum-1st-app-btn');
 
     dum1stAppBtn.addEventListener("click", function(event){
@@ -100,6 +99,14 @@
 
     dum3rdAppBtn.addEventListener("click", function(event){
         event.preventDefault();
+    });
+
+    let btnLogout = document.getElementById('btn-logout');
+    btnLogout.addEventListener('click', function(){
+        document.cookie = 'access=';
+        document.cookie = 'refresh=';
+        document.cookie = 'csrf=';
+        location.reload();
     });
 
 </script>
